@@ -38,6 +38,17 @@ function handleEncoding(url) {
   return url;
 }
 
+function deleteFav(e) {
+  var alertstr = "Really delete?"
+  if (confirm(alertstr)) {
+    favs = favs.filter(function(item) {
+      return !item.includes(e.target.firstChild.data);
+    });
+    drawAllFavs();
+    localStorage.setObject('favs', favs);
+  }
+}
+
 function addFav() {
   var url = prompt("name^url");
   if (url != null) {
@@ -49,8 +60,66 @@ function addFav() {
   }
 }
 
+function drawAllFavs() {
+  Array.isArray(favs) && favs.forEach(function(fav) {
+    drawBox(fav);
+  });
+}
+
 let favs = localStorage.getObject('favs');
 let t = false;
-Array.isArray(favs) && favs.forEach(function(fav) {
-  drawBox(fav);
-});
+drawAllFavs();
+
+var longpress = false;
+var presstimer = null;
+var longtarget = null;
+
+var cancel = function(e) {
+    if (presstimer !== null) {
+        clearTimeout(presstimer);
+        presstimer = null;
+    }
+    
+    this.classList.remove("longpress");
+};
+
+var click = function(e) {
+    if (presstimer !== null) {
+        clearTimeout(presstimer);
+        presstimer = null;
+    }
+    
+    this.classList.remove("longpress");
+    
+    if (longpress) {
+        return false;
+    }
+};
+
+var start = function(e) {
+    if (e.type === "click" && e.button !== 0) {
+        return;
+    }
+    
+    longpress = false;
+    
+    this.classList.add("longpress");
+    
+    presstimer = setTimeout(function() {
+        deleteFav(e);
+        longpress = true;
+    }, 800);
+    
+    return false;
+};
+
+var nodes = document.getElementsByTagName("a");
+for (var i = 0, len = nodes.length; i < len; i++) {
+  nodes[i].addEventListener("mousedown", start);
+  nodes[i].addEventListener("touchstart", start);
+  nodes[i].addEventListener("click", click);
+  nodes[i].addEventListener("mouseout", cancel);
+  nodes[i].addEventListener("touchend", cancel);
+  nodes[i].addEventListener("touchleave", cancel);
+  nodes[i].addEventListener("touchcancel", cancel);
+}

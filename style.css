@@ -1,5 +1,5 @@
 body {
-	background-color: #26353f;
+	background-color: #000000;
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
@@ -60,4 +60,13 @@ a {
   font-size: xx-large;
   text-decoration: none;
   color: #b8b8b8; /* Great b8 m8 */
+}
+
+.longpress {
+            animation: 1s longpress;
+}
+
+keyframes longpress {
+    0%, 20% { background: red; }
+    100% { background: #26353f; }
 }
